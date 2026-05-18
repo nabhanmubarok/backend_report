@@ -29,5 +29,6 @@ pool.getConnection((err, connection) => {
 
 // Promise wrapper untuk menggunakan async/await
 const db = pool.promise();
-
+console.log('DB_HOST:', process.env.DB_HOST);
+console.log('DB_NAME:', process.env.DB_NAME);
 module.exports = db;
