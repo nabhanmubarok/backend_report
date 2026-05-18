@@ -10,6 +10,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Tambahkan ini sebelum routes
+app.get('/test-db', async (req, res) => {
+    try {
+        const db = require('./config/database');
+        const [result] = await db.query('SELECT 1 as test');
+        res.json({
+            success: true,
+            message: 'Database connected!',
+            host: process.env.DB_HOST,
+            database: process.env.DB_NAME
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+            host: process.env.DB_HOST
+        });
+    }
+});
+
 const userRoutes = require('./routes/userRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const commentRoutes = require('./routes/commentRoutes');
