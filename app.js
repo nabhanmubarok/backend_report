@@ -5,23 +5,11 @@ const path = require('path');
 
 const app = express();
 
-// Middleware
-
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-// Middleware
-app.use(cors({
-  origin: ["http://localhost:3001", "https://nama-project.vercel.app"],
-  credentials: true
-}));
 
-app.use(cors({
-  origin: "*",
-  credentials: false
-}));app.options('*', cors(corsOptions)); // Handle preflight requests
-
-// Routes
 const userRoutes = require('./routes/userRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const commentRoutes = require('./routes/commentRoutes');
@@ -30,39 +18,24 @@ app.use('/api/users', userRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/comments', commentRoutes);
 
-// Home route
 app.get('/', (req, res) => {
     res.json({
         success: true,
         message: 'Sistem Pelaporan Pengaduan Masyarakat API',
-        version: '1.0.0',
-        endpoints: {
-            users: '/api/users',
-            reports: '/api/reports',
-            comments: '/api/comments'
-        }
+        version: '1.0.0'
     });
 });
 
-// Error handler untuk route tidak ditemukan
 app.use((req, res) => {
-    res.status(404).json({
-        success: false,
-        message: 'Endpoint tidak ditemukan'
-    });
+    res.status(404).json({ success: false, message: 'Endpoint tidak ditemukan' });
 });
 
-// Global error handler
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).json({
-        success: false,
-        message: err.message || 'Terjadi kesalahan pada server'
-    });
+    res.status(500).json({ success: false, message: err.message || 'Server error' });
 });
 
-// Jalankan server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server berjalan di port ${PORT}`);
+    console.log(`Server berjalan di port ${PORT}`);
 });
