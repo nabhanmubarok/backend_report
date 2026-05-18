@@ -16,8 +16,10 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Handle preflight requests
+app.use(cors({
+  origin: "*",
+  credentials: false
+}));app.options('*', cors(corsOptions)); // Handle preflight requests
 
 // Routes
 const userRoutes = require('./routes/userRoutes');
@@ -61,7 +63,6 @@ app.use((err, req, res, next) => {
 
 // Jalankan server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Server berjalan di http://localhost:${PORT}`);
-    console.log(`📊 Database: ${process.env.DB_NAME}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server berjalan di port ${PORT}`);
 });
