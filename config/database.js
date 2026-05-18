@@ -1,12 +1,8 @@
 const mysql = require('mysql2');
 
-// LANGSUNG PAKAI process.env, tanpa dotenv.config()
+// Railway otomatis memberikan DATABASE_URL
 const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT || 3306,
+    uri: process.env.DATABASE_URL,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -15,13 +11,13 @@ const pool = mysql.createPool({
 const db = pool.promise();
 
 // Test koneksi
-pool.getConnection((err, connection) => {
-    if (err) {
-        console.error('❌ Database connection failed:', err.message);
-    } else {
+db.getConnection()
+    .then(connection => {
         console.log('✅ Database connected successfully');
         connection.release();
-    }
-});
+    })
+    .catch(err => {
+        console.error('❌ Database connection failed:', err.message);
+    });
 
 module.exports = db;
