@@ -28,7 +28,7 @@ app.get('/test-db', async (req, res) => {
         });
     }
 });
-
+const notificationRoutes = require('./routes/notificationRoutes');
 const userRoutes = require('./routes/userRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const commentRoutes = require('./routes/commentRoutes');
@@ -36,6 +36,8 @@ const commentRoutes = require('./routes/commentRoutes');
 app.use('/api/users', userRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/comments', commentRoutes);
+app.use('/api/notifications', notificationRoutes);
+
 
 app.get('/', (req, res) => {
     res.json({

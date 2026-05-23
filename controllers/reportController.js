@@ -289,33 +289,31 @@ const updateReportStatus = async (req, res) => {
 
         const validStatus = ['pending', 'approved', 'rejected'];
         if (!validStatus.includes(status)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Status tidak valid'
-            });
+            return res.status(400).json({ success: false, message: 'Status tidak valid' });
         }
 
-        const [reports] = await db.query('SELECT id FROM public_reports WHERE id = ?', [id]);
+        const [reports] = await db.query(
+            'SELECT id, user_id, header FROM public_reports WHERE id = ?', [id]
+        );
         if (reports.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'Laporan tidak ditemukan'
-            });
+            return res.status(404).json({ success: false, message: 'Laporan tidak ditemukan' });
         }
 
         await db.query('UPDATE public_reports SET status = ? WHERE id = ?', [status, id]);
 
-        res.json({
-            success: true,
-            message: `Status laporan berhasil diubah menjadi ${status}`
-        });
+        // Kirim notifikasi ke pemilik laporan
+        const statusLabel = { pending: 'Menunggu', approved: 'Disetujui', rejected: 'Ditolak' };
+        const message = `Laporan "${reports[0].header}" telah diperbarui statusnya menjadi ${statusLabel[status]}.`;
+        await db.query(
+            'INSERT INTO notifications (user_id, report_id, message) VALUES (?, ?, ?)',
+            [reports[0].user_id, id, message]
+        );
+
+        res.json({ success: true, message: `Status laporan berhasil diubah menjadi ${status}` });
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({
-            success: false,
-            message: 'Terjadi kesalahan pada server'
-        });
+        res.status(500).json({ success: false, message: 'Terjadi kesalahan pada server' });
     }
 };
 
