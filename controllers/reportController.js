@@ -11,7 +11,7 @@ const createReport = async (req, res) => {
         
         let image = null;
         if (req.file) {
-            image = req.file.filename;
+        image = req.file.path; // Cloudinary URL
         }
 
         if (!header || !body || !category_id) {
@@ -206,15 +206,8 @@ const updateReport = async (req, res) => {
             params.push(longitude);
         }
         if (req.file) {
-            // Hapus gambar lama
-            if (reports[0].image) {
-                const oldPath = path.join(__dirname, '../uploads', reports[0].image);
-                if (fs.existsSync(oldPath)) {
-                    fs.unlinkSync(oldPath);
-                }
-            }
-            updates.push('image = ?');
-            params.push(req.file.filename);
+        updates.push('image = ?');
+        params.push(req.file.path); // Cloudinary URL
         }
 
         if (updates.length === 0) {
