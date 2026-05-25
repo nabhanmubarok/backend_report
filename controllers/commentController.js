@@ -51,7 +51,7 @@ const getCommentsByReport = async (req, res) => {
         const offset = (page - 1) * limit;
 
         const [comments] = await db.query(
-            `SELECT c.*, u.username as commenter 
+            `SELECT c.*, u.username as commenter, u.avatar as commenter_avatar
              FROM comments c
              JOIN users u ON c.user_id = u.id
              WHERE c.public_report_id = ?
