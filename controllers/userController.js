@@ -113,10 +113,11 @@ const login = async (req, res) => {
 // Get profile (user sendiri)
 const getProfile = async (req, res) => {
     try {
+        
         const [users] = await db.query(
-            'SELECT id, username, role, created_at FROM users WHERE id = ?',
-            [req.user.id]
-        );
+    'SELECT id, username, role, avatar, created_at FROM users WHERE id = ?',
+    [req.user.id]
+);
 
         if (users.length === 0) {
             return res.status(404).json({
@@ -248,7 +249,7 @@ const deleteAccount = async (req, res) => {
 const getAllUsers = async (req, res) => {
     try {
         const [users] = await db.query(
-            'SELECT id, username, role, created_at FROM users ORDER BY created_at DESC'
+            'SELECT id, username, role, avatar, created_at FROM users ORDER BY created_at DESC'
         );
 
         res.json({
@@ -271,7 +272,7 @@ const getUserById = async (req, res) => {
         const { id } = req.params;
 
         const [users] = await db.query(
-            'SELECT id, username, role, created_at FROM users WHERE id = ?',
+            'SELECT id, username, role, avatar, created_at FROM users WHERE id = ?',
             [id]
         );
 
@@ -403,16 +404,23 @@ const deleteUser = async (req, res) => {
     }
 };
 
+const updateAvatar = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'File gambar wajib diupload' });
+        }
+        const avatarUrl = req.file.path;
+        await db.query('UPDATE users SET avatar = ? WHERE id = ?', [avatarUrl, req.user.id]);
+        res.json({ success: true, message: 'Foto profil berhasil diupdate', data: { avatar: avatarUrl } });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Terjadi kesalahan pada server' });
+    }
+};
+
 module.exports = {
-    register,
-    login,
-    getProfile,
-    updateProfile,
-    changePassword,
-    deleteAccount,
-    getAllUsers,
-    getUserById,
-    createUser,
-    updateUser,
-    deleteUser
+    register, login, getProfile, updateProfile,
+    changePassword, deleteAccount, getAllUsers,
+    getUserById, createUser, updateUser, deleteUser,
+    updateAvatar
 };
