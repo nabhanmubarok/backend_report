@@ -51,7 +51,7 @@ const getAllReports = async (req, res) => {
         const { status, category_id, near, lat, lng, radius = 5, page = 1, limit = 10 } = req.query;
         
         let query = `
-            SELECT r.*, u.username as author, c.category_name,
+            SELECT r.*, u.username as author, u.avatar as author_avatar, c.category_name,
             (SELECT COUNT(*) FROM comments WHERE public_report_id = r.id) as comment_count
             FROM public_reports r
             JOIN users u ON r.user_id = u.id
@@ -122,7 +122,7 @@ const getReportById = async (req, res) => {
         const { id } = req.params;
 
         const [reports] = await db.query(
-            `SELECT r.*, u.username as author, c.category_name 
+            `SELECT r.*, u.username as author, u.avatar as author_avatar, c.category_name 
              FROM public_reports r
              JOIN users u ON r.user_id = u.id
              JOIN categories c ON r.category_id = c.id
